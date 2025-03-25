@@ -6,7 +6,6 @@ import MachineCard from "../components/MachineCard";
 import ModalMachine from "../components/ModalMachine";
 
 const Dashboard = () => {
-  // Estado para la máquina seleccionada (mostrar modal)
   const [selectedMachine, setSelectedMachine] = useState(null);
 
   // Ejemplo de zonas y máquinas
@@ -17,6 +16,7 @@ const Dashboard = () => {
       machines: [
         { id: 101, name: "ECO 1", type: "eco", temperature: 22, status: "ON" },
         { id: 102, name: "EXT 1", type: "ext", temperature: 18, status: "OFF" },
+        
       ],
     },
     {
@@ -27,22 +27,19 @@ const Dashboard = () => {
         { id: 202, name: "EXT 2", type: "ext", temperature: 16, status: "OFF" },
       ],
     },
-    // Agrega más zonas y máquinas según necesites
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 text-black w-full">
+    <div className="min-h-screen bg-blue-100 text-black w-full">
       <Navbar />
 
-      {/* Contenedor principal para las zonas */}
-      <div className="max-w-6xl mx-auto py-5">
+      <div className="max-w-6xl mx-auto py-5 ">
         {zones.map((zone) => (
           <div key={zone.id} className="mb-6">
-            {/* Título de la zona */}
-            <h2 className="text-xl font-bold mb-4">{zone.name}</h2>
-
-            {/* Contenedor de máquinas de la zona */}
-            <div className="grid grid-cols-2 gap-4">
+            <h2 className="text-xl font-bold mb-4 ">{zone.name}</h2>
+            
+            {/* Ajustamos a 4 columnas y menor gap */}
+            <div className="grid grid-cols-4 gap-2 bg-gray-50 p-4 rounded-md">
               {zone.machines.map((machine) => (
                 <MachineCard
                   key={machine.id}
@@ -55,7 +52,6 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Modal para ver información adicional de la máquina seleccionada */}
       {selectedMachine && (
         <ModalMachine
           machine={selectedMachine}

@@ -5,58 +5,56 @@ import React from "react";
 const MachineCard = ({ machine, onSelect }) => {
   const { name, type, temperature, status } = machine;
 
-  // Podrías usar imágenes diferentes para cada tipo de máquina
-  const ecoImage = "/assets/eco_machine.png";
-  const extImage = "/assets/ext_machine.png";
+  // Imágenes según el tipo de máquina
+  const ecoImage = "./img/eco.png";
+  const extImage = "./img/ext.png";
 
-  // Función para apagar la máquina (lógica a tu gusto)
+  // Función para apagar la máquina
   const handlePowerOff = (e) => {
-    e.stopPropagation(); // Evitar que se abra el modal al hacer clic en el botón
+    e.stopPropagation(); // Evita abrir el modal al hacer clic en el botón
     console.log(`Apagando máquina ${name}`);
-    // Aquí puedes llamar a una API o actualizar estado, etc.
+    // Lógica adicional para apagar la máquina (API, estado, etc.)
   };
+
+  // Determina la imagen según el tipo
+  const machineImage = type === "eco" ? ecoImage : extImage;
 
   return (
     <div
       onClick={() => onSelect(machine)}
-      className="bg-white p-4 rounded-lg shadow-lg cursor-pointer hover:bg-gray-100"
+      className="bg-white w-60 p-4 rounded-lg shadow-lg cursor-pointer hover:bg-gray-100"
     >
-      <h3 className="font-bold text-lg mb-2">{name}</h3>
+      {/* Título de la máquina */}
+      <h3 className="font-bold text-xl mb-2">{name}</h3>
 
-      {/* Render condicional para ECO */}
-      {type === "eco" && (
-        <div>
-          <img
-            src={ecoImage}
-            alt="Eco Machine"
-            className="w-16 h-16 object-contain mx-auto mb-2"
-          />
-          <p className="mb-2">Temp: {temperature} °C</p>
+      {/* Contenido en dos columnas: imagen a la izquierda, info a la derecha */}
+      <div className="flex items-center space-x-4">
+        {/* Imagen */}
+        <img
+          src={machineImage}
+          alt={`${type} machine`}
+          className="w-20 h-20 object-contain"
+        />
+
+        {/* Información y botón */}
+        <div className="flex flex-col">
+          {/* Solo ECO muestra temperatura */}
+          {type === "eco" && (
+            <p className="mb-2 text-lg">Temp: {temperature} °C</p>
+          )}
+          {/* EXT podría también mostrar la temperatura si lo deseas */}
+          {type === "ext" && (
+            <p className="mb-2 text-lg">Temp: {temperature} °C</p>
+          )}
+
           <button
-            className="bg-red-500 text-white px-3 py-1 rounded"
+            className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-600 text-sm"
             onClick={handlePowerOff}
           >
             Apagar
           </button>
         </div>
-      )}
-
-      {/* Render condicional para EXT */}
-      {type === "ext" && (
-        <div>
-          <img
-            src={extImage}
-            alt="Ext Machine"
-            className="w-16 h-16 object-contain mx-auto mb-2"
-          />
-          <button
-            className="bg-red-500 text-white px-3 py-1 rounded"
-            onClick={handlePowerOff}
-          >
-            Apagar
-          </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
