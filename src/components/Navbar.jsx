@@ -1,12 +1,9 @@
-// Navbar.jsx
 import React, { useEffect, useState } from "react";
-// Importamos algunos iconos de react-icons
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import { AiOutlineAreaChart } from "react-icons/ai";
 
 const Navbar = () => {
-  // Estado para manejar la hora actual
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -16,69 +13,68 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Formato de hora en español
   const timeString = currentTime.toLocaleTimeString("es-ES", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
   });
 
-  // Datos ficticios de la sonda exterior
-  const exteriorTemperature = 20; // Cambia esto según tu API o props
-  const exteriorHumidity = 40;    // Cambia esto según tu API o props
+  // Datos ficticios para la sonda exterior
+  const exteriorTemperature = 20;
+  const exteriorHumidity = 40;
 
   return (
-    <nav className="bg-gray-50 px-4 py-3 shadow-md flex items-center justify-between">
-      {/* Sección izquierda: Hora actual y sonda exterior */}
-      <div className="flex items-center space-x-6">
-        <span className="font-bold text-lg">{timeString}</span>
-        <div className="flex items-center space-x-2">
-          <span className="font-bold">Sonda Exterior:</span>
-          <span>
+    <nav className="bg-white px-6 py-4 shadow-md flex flex-col md:flex-row items-center justify-between">
+      {/* Sección izquierda: Hora y sonda */}
+      <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-8">
+        <span className="font-bold text-2xl">{timeString}</span>
+        <div className="flex items-center space-x-3">
+          <span className="font-bold text-xl">Sonda Exterior:</span>
+          <span className="text-xl">
             {exteriorTemperature}°C / {exteriorHumidity}%
           </span>
         </div>
       </div>
 
-      {/* Botones de selección de zonas */}
-      <div className="flex items-center space-x-2">
-        <button className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer">
+      {/* Selección de zonas */}
+      <div className="flex flex-wrap items-center justify-center space-x-3 my-3 md:my-0">
+        <button className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer text-xl">
           1
         </button>
-        <button className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer">
+        <button className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer text-xl">
           2
         </button>
-        <button className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer">
+        <button className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer text-xl">
           3
         </button>
-        <button className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer">
+        <button className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer text-xl">
           4
         </button>
       </div>
 
-      {/* Botones: Reportes, Diagnósticos y Gráficos como iconos */}
-      <div className="flex items-center space-x-2">
-        <button className="bg-gray-200 p-2 rounded hover:bg-gray-300 cursor-pointer">
-          <HiOutlineDocumentReport size={20} />
+      {/* Botones de iconos: Reportes, Diagnósticos y Gráficos */}
+      <div className="flex items-center space-x-3">
+        <button className="bg-gray-200 p-3 rounded hover:bg-gray-300 cursor-pointer">
+          <HiOutlineDocumentReport size={26} />
         </button>
-        <button className="bg-gray-200 p-2 rounded hover:bg-gray-300 cursor-pointer">
-          <MdOutlineErrorOutline size={20} />
+        <button className="bg-gray-200 p-3 rounded hover:bg-gray-300 cursor-pointer">
+          <MdOutlineErrorOutline size={26} />
         </button>
-        <button className="bg-gray-200 p-2 rounded hover:bg-gray-300 cursor-pointer">
-          <AiOutlineAreaChart size={20} />
+        <button className="bg-gray-200 p-3 rounded hover:bg-gray-300 cursor-pointer">
+          <AiOutlineAreaChart size={26} />
         </button>
       </div>
 
-      {/* Sección derecha: Ayuda y Perfil */}
-      <div className="flex items-center space-x-2">
-        <button className="bg-gray-300 px-3 py-1 rounded hover:bg-gray-400 cursor-pointer">
+      {/* Ayuda y Perfil */}
+      <div className="flex items-center space-x-3">
+        <button className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400 cursor-pointer text-xl">
           Ayuda
         </button>
-        <button className="bg-gray-300 p-1 rounded-full hover:bg-gray-400 cursor-pointer">
+        <button className="bg-gray-300 p-2 rounded-full hover:bg-gray-400 cursor-pointer">
           <img
-            src="./img/default.png"
+            src="img/default.png"
             alt="Perfil"
-            className="w-8 h-8 rounded-full"
+            className="w-10 h-10 rounded-full"
           />
         </button>
       </div>

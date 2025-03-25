@@ -1,54 +1,43 @@
-// MachineCard.jsx
-
 import React from "react";
+import { FaThermometerHalf } from "react-icons/fa"; // Importamos el icono
 
 const MachineCard = ({ machine, onSelect }) => {
-  const { name, type, temperature, status } = machine;
+  const { name, type, temperature } = machine;
 
-  // Imágenes según el tipo de máquina
-  const ecoImage = "./img/eco.png";
-  const extImage = "./img/ext.png";
+  // Define las rutas de las imágenes según el tipo
+  const ecoImage = "/img/eco.png";
+  const extImage = "/img/ext.png";
 
-  // Función para apagar la máquina
   const handlePowerOff = (e) => {
-    e.stopPropagation(); // Evita abrir el modal al hacer clic en el botón
+    e.stopPropagation();
     console.log(`Apagando máquina ${name}`);
-    // Lógica adicional para apagar la máquina (API, estado, etc.)
+    // Aquí puedes agregar la lógica de apagado
   };
 
-  // Determina la imagen según el tipo
+  // Selecciona la imagen según el tipo
   const machineImage = type === "eco" ? ecoImage : extImage;
 
   return (
     <div
       onClick={() => onSelect(machine)}
-      className="bg-white w-60 p-4 rounded-lg shadow-lg cursor-pointer hover:bg-gray-100"
+      className="bg-gray-50 p-6 rounded-lg shadow cursor-pointer hover:bg-gray-100"
     >
-      {/* Título de la máquina */}
-      <h3 className="font-bold text-xl mb-2">{name}</h3>
-
-      {/* Contenido en dos columnas: imagen a la izquierda, info a la derecha */}
-      <div className="flex items-center space-x-4">
-        {/* Imagen */}
+      <h3 className="font-bold text-2xl mb-4">{name}</h3>
+      <div className="flex items-center space-x-2">
         <img
           src={machineImage}
           alt={`${type} machine`}
-          className="w-20 h-20 object-contain"
+          className="w-38 h-24 object-contain"
         />
-
-        {/* Información y botón */}
-        <div className="flex flex-col">
-          {/* Solo ECO muestra temperatura */}
+        <div className="flex flex-col text-xl">
           {type === "eco" && (
-            <p className="mb-2 text-lg">Temp: {temperature} °C</p>
+            <p className="mb-4">
+              <FaThermometerHalf className="inline-block mr-2" />
+              {temperature} °C
+            </p>
           )}
-          {/* EXT podría también mostrar la temperatura si lo deseas */}
-          {type === "ext" && (
-            <p className="mb-2 text-lg">Temp: {temperature} °C</p>
-          )}
-
           <button
-            className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-600 text-sm"
+            className="bg-red-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-600"
             onClick={handlePowerOff}
           >
             Apagar
