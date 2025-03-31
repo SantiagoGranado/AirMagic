@@ -6,11 +6,15 @@ import bcrypt from 'bcryptjs';
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [compañia, setCompañia] = useState(''); // Cambié 'nombre' y 'apellido' por 'compañia'
+  const [compañia, setCompañia] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);  // Para seleccionar si el nuevo usuario es admin
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+
+  const userId = localStorage.getItem('userId');
+  const isLoggedAdmin = localStorage.getItem('es_admin') === 'true';
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -31,9 +35,15 @@ export default function Register() {
     e.preventDefault();
     setErrors({});
 
-    // Validación mínima de la contraseña
+    // Validación de contraseña
     if (password.length < 6) {
       setErrors({ password: 'La contraseña debe tener al menos 6 caracteres' });
+      return;
+    }
+
+    // Verificar si es admin
+    if (!isLoggedAdmin) {
+      setErrors({ general: 'Solo un administrador puede registrar usuarios administradores.' });
       return;
     }
 
@@ -41,17 +51,14 @@ export default function Register() {
     const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
-      if (error.message.includes('already registered')) {
-        setErrors({ email: 'El correo ya está registrado' });
-      } else {
-        setErrors({ general: 'Error al registrar: ' + error.message });
-      }
+      setErrors({ general: 'Error al registrar: ' + error.message });
       return;
     }
 
     const userId = data.user?.id;
     let foto_url = null;
 
+    // Subir foto del usuario
     if (file && userId) {
       const fileExt = file.name.split('.').pop();
       const filePath = `${userId}/avatar.${fileExt}`;
@@ -75,15 +82,15 @@ export default function Register() {
     // Encriptar contraseña con bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insertar los datos del usuario en la tabla `Usuarios`
+    // Insertar en la tabla Usuarios
     const { error: insertError } = await supabase.from('Usuarios').insert([
       {
         id: userId,
-        compañia,        // Usamos el nuevo campo `compañia`
+        compañia,
         foto_url,
         email,
         contraseña: hashedPassword,
-        es_admin: false, // Por defecto, los usuarios no serán administradores
+        es_admin: isAdmin,  // Solo un admin puede registrar otros como admin
       },
     ]);
 
@@ -97,7 +104,7 @@ export default function Register() {
   return (
     <div className="flex items-center justify-center h-screen">
       <form onSubmit={handleRegister} className="flex flex-col gap-4 w-80">
-        <h1 className="text-2xl font-bold text-center">Registro</h1>
+        <h1 className="text-2xl font-bold text-center">Registrar Nuevo Usuario</h1>
 
         {errors.general && <p className="text-red-500 text-sm text-center">{errors.general}</p>}
 
@@ -105,11 +112,11 @@ export default function Register() {
           type="text"
           placeholder="Compañía"
           value={compañia}
-          onChange={(e) => setCompañia(e.target.value)} // Se cambió de 'nombre' a 'compañia'
+          onChange={(e) => setCompañia(e.target.value)}
           className="border p-2 rounded"
           required
         />
-        
+
         <input
           type="email"
           placeholder="Correo electrónico"
@@ -118,7 +125,7 @@ export default function Register() {
           className="border p-2 rounded"
           required
         />
-        
+
         <input
           type="password"
           placeholder="Contraseña"
@@ -127,7 +134,17 @@ export default function Register() {
           className="border p-2 rounded"
           required
         />
-        
+
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            checked={isAdmin}
+            onChange={() => setIsAdmin(!isAdmin)}
+            className="mr-2"
+          />
+          <span>Registrar como administrador</span>
+        </label>
+
         {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
 
         <label
@@ -153,9 +170,7 @@ export default function Register() {
           />
         )}
 
-        <button type="submit" className="bg-blue-600 text-white py-2 rounded">
-          Registrarse
-        </button>
+        <button type="submit" className="bg-blue-600 text-white py-2 rounded">Registrar</button>
       </form>
     </div>
   );
