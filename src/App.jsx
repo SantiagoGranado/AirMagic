@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminPanel from './pages/AdminPanel';
+import Profile from './pages/Profile'; // Importa la página de perfil
 import ProtectedRoute from './components/ProtectedRoute';  // Usar el componente de protección de ruta
 import ErrorPage from './pages/ErrorPage';
 
@@ -52,6 +53,16 @@ function App() {
           <PrivateAdminRoute>
             <AdminPanel />
           </PrivateAdminRoute>
+        }
+      />
+
+      {/* Ruta para el perfil, accesible solo para usuarios logueados */}
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
+          </PrivateRoute>
         }
       />
 
