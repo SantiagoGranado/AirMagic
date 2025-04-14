@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabase";
 import { FaThermometerHalf } from "react-icons/fa";
+import LoadingSpinner from "./LoadingSpinner";
 
 const ModalMachine = ({ machine, onClose }) => {
   if (!machine) return null;
@@ -91,9 +92,9 @@ const ModalMachine = ({ machine, onClose }) => {
   if (!status) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="bg-white p-10 rounded shadow-lg">
-          <p className="text-lg">Cargando datos de la máquina...</p>
-        </div>
+       
+        <LoadingSpinner />
+       
       </div>
     );
   }

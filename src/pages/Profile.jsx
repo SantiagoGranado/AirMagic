@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../supabase";
+import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 import PasswordChangeModal from "../components/PasswordChangeModal";
 
 const Profile = () => {
@@ -118,10 +120,12 @@ const Profile = () => {
     showPopup("Imagen de perfil actualizada con éxito", "success");
   };
 
-  if (!user) return <p>Cargando perfil...</p>;
+  if (!user) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-50 via-white to-blue-50 py-10">
+    <div className="min-h-screen bg-blue-100 py-10">
+      <Navbar onZoneSelect={() => navigate("/dashboard")} />
+      
       {/* Botón para volver */}
       <div className="max-w-4xl mx-auto mb-4">
         <button
@@ -152,7 +156,8 @@ const Profile = () => {
         />
       )}
 
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+      {/* Contenedor principal del contenido, se agregó mt-12 para separarlo del centro */}
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-12">
         <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
           Mi Perfil
         </h1>

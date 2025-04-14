@@ -92,7 +92,7 @@ const PasswordChangeModal = ({ user, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+      <div className="bg-gray-50 rounded-lg shadow-lg p-6 w-96">
         <h2 className="text-xl font-bold mb-4">Cambiar Contraseña</h2>
         <form onSubmit={handlePasswordChangeSubmit}>
           {renderPasswordInput(
