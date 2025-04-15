@@ -67,7 +67,7 @@ export default function Login() {
           className="border p-2 rounded"
           required
         />
-        <button type="submit" className="bg-green-600 text-white py-2 rounded cursor-pointer">
+        <button type="submit" className="bg-blue-500 text-white py-2 rounded cursor-pointer">
           Iniciar sesión
         </button>
       </form>

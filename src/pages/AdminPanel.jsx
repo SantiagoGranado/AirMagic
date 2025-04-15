@@ -26,8 +26,8 @@ export default function AdminPanel() {
   }, []);
 
   return (
-    <div className="p-8 ">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-8 min-h-screen bg-blue-100">
+      <div className="flex justify-between items-center mb-6 ">
         <h1 className="text-3xl font-bold">Panel de Administrador</h1>
         <button
           className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-in-out 

@@ -125,23 +125,12 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-blue-100 py-10">
       <Navbar onZoneSelect={() => navigate("/dashboard")} />
-      
-      {/* Botón para volver */}
-      <div className="max-w-4xl mx-auto mb-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
-        >
-          Volver
-        </button>
-      </div>
 
       {/* Pop up para mostrar mensajes de error o éxito */}
       {popupVisible && (
         <div
-          className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded z-50 shadow ${
-            popupType === "error" ? "bg-red-500 text-white" : "bg-green-500 text-white"
-          }`}
+          className={`fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded z-50 shadow ${popupType === "error" ? "bg-red-500 text-white" : "bg-green-500 text-white"
+            }`}
         >
           {popupMessage}
         </div>
@@ -157,7 +146,13 @@ const Profile = () => {
       )}
 
       {/* Contenedor principal del contenido, se agregó mt-12 para separarlo del centro */}
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-12">
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-16">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 cursor-pointer"
+        >
+          Volver
+        </button>
         <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
           Mi Perfil
         </h1>
@@ -196,6 +191,20 @@ const Profile = () => {
               Cambiar contraseña
             </button>
           </div>
+
+          {/* Botón para cerrar sesión (borrar localStorage y navegar a login) */}
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => {
+                localStorage.clear();
+                navigate("/login");
+              }}
+              className="bg-red-600 text-white px-6 py-2 rounded-md cursor-pointer"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
