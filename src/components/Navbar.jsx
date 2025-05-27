@@ -206,7 +206,7 @@ export default function Navbar({ onZoneSelect }) {
 
             {/* Desktop */}
             <img
-              src="./public/img/tutorial.png"
+              src="./img/tutorial.jpg"
               alt="Tutorial"
               className="hidden md:block w-full h-full object-contain rounded"
             />
@@ -221,7 +221,7 @@ export default function Navbar({ onZoneSelect }) {
               </button>
               <div className="min-w-[1000px] h-full flex justify-center items-center p-4">
                 <img
-                  src="../public/img/tutorial.png"
+                  src="./img/tutorial.jpg"
                   alt="Tutorial Móvil"
                   className="w-[1000px] max-w-none object-contain"
                 />
