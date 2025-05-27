@@ -206,7 +206,7 @@ export default function Navbar({ onZoneSelect }) {
 
             {/* Desktop */}
             <img
-              src="../public/img/tutorial.png"
+              src="./public/img/tutorial.png"
               alt="Tutorial"
               className="hidden md:block w-full h-full object-contain rounded"
             />
