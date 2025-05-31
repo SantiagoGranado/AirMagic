@@ -28,9 +28,6 @@ Este es un proyecto web de **gestión de sistemas de climatización en naves ind
 * **Despliegue y CI/CD**:  
   - El frontend se despliega en Vercel (u otro proveedor similar) con variables de entorno configuradas en el panel de Vercel/Netlify.  
   - Se ha configurado un workflow de **GitHub Actions** que, al hacer push a `main`, ejecuta lint, tests (si existen) y build, y despliega automáticamente en producción.  
-* **Plan de pruebas (básico)**:  
-  - Se utilizan **Jest** y **React Testing Library** para pruebas unitarias de componentes clave y hooks personalizados.  
-  - Se ha preparado un script de **Cypress** (o similar) para pruebas E2E mínimas: flujo de login, ver máquinas y simular alarma.  
 * **Mejoras futuras** (dependientes de feedback en producción):  
   - Perfeccionar la conexión con las máquinas (gestión de reconexión, latencia, validación de datos).  
   - Optimizar la base de datos: índices compuestos, particionado de tablas de historial, ajustes de pool.  
