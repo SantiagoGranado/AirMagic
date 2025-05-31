@@ -85,4 +85,4 @@ package.json
 
 ## Licencia
 
-Este proyecto es de **código abierto**, pero **no acepta contribuciones externas**. La **licencia es propiedad exclusiva del autor**, y se distribuye bajo los términos que se especifican en el archivo de licencia del proyecto.
+Este proyecto es de **código privado** y **no acepta contribuciones externas**. La **licencia es propiedad exclusiva del autor**, y se distribuye bajo los términos que se especifican en el archivo de licencia del proyecto.
