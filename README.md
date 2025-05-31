@@ -47,14 +47,10 @@ Este es un proyecto web de **gestión de sistemas de climatización en naves ind
 * **Backend y base de datos**  
   - [Supabase](https://supabase.com/) (Auth, PostgreSQL, Realtime)  
   - PostgreSQL con **Row-Level Security (RLS)**  
-  - [bcryptjs](https://github.com/dcodeIO/bcrypt.js) (cifrado de contraseñas en entornos serverless)  
 * **Despliegue y CI/CD**  
   - Vercel (o Netlify) para hosting de frontend  
   - GitHub Actions para automatizar lint, tests, build y despliegue  
-* **Otras herramientas**  
-  - ESLint + Prettier (formato y calidad de código)  
-  - Cypress (pruebas end-to-end)  
-  - Jest + React Testing Library (pruebas unitarias)  
+
 
 ---
 
