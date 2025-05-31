@@ -1,11 +1,12 @@
 // src/pages/Dashboard.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabase";
 import { useAuth } from "../context/AuthContext.jsx";
 import useZones from "../hooks/useZones.jsx";
 import Navbar from "../components/Navbar.jsx";
 import MachineCard from "../components/MachineCard.jsx";
 import ModalMachine from "../components/ModalMachine.jsx";
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -14,19 +15,54 @@ const Dashboard = () => {
   const [selectedZone, setSelectedZone] = useState(null);
   const [selectedMachine, setSelectedMachine] = useState(null);
 
+  // Estado para saber si aún estamos cargando las máquinas por zona
+  const [loadingMachines, setLoadingMachines] = useState(true);
+  // Estado para controlar el timeout de 5 segundos
+  const [timeoutReached, setTimeoutReached] = useState(false);
+  const timerRef = useRef(null);
+
   useEffect(() => {
+    // Al montar, empezamos el timeout de 5s
+    timerRef.current = setTimeout(() => {
+      setTimeoutReached(true);
+    }, 5000);
+
+    // Limpiar en unmount
+    return () => {
+      clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Si ya hemos cargado las máquinas antes de que expire el timeout, limpiamos el timer
+    if (!loadingMachines) {
+      clearTimeout(timerRef.current);
+    }
+  }, [loadingMachines]);
+
+  useEffect(() => {
+    // Si todavía están cargando las zonas, o no hay zonas, o no hay usuario, salimos
     if (zonesLoading || !rawZones.length || !user) return;
 
     const fetchZonesAndMachines = async () => {
+      setLoadingMachines(true);
       const userId = user.id;
-      const { data: ecoMachines = [] } = await supabase
+
+      const { data: ecoMachines = [], error: ecoError } = await supabase
         .from("MaquinasEco")
         .select("*")
         .eq("usuario_id", userId);
-      const { data: extMachines = [] } = await supabase
+      if (ecoError) {
+        console.error(ecoError);
+      }
+
+      const { data: extMachines = [], error: extError } = await supabase
         .from("MaquinasExt")
         .select("*")
         .eq("usuario_id", userId);
+      if (extError) {
+        console.error(extError);
+      }
 
       const zonesWithMachines = rawZones.map((zona) => {
         const eco = ecoMachines.filter((m) => m.zona_id === zona.id);
@@ -54,13 +90,16 @@ const Dashboard = () => {
       });
 
       setZones(zonesWithMachines);
+      setLoadingMachines(false);
+
+      // Si no hay zona seleccionada y existen zonas, seleccionamos la primera
       if (!selectedZone && zonesWithMachines.length > 0) {
         setSelectedZone(zonesWithMachines[0].id);
       }
     };
 
     fetchZonesAndMachines();
-  }, [rawZones, zonesLoading, user]);
+  }, [rawZones, zonesLoading, user, selectedZone]);
 
   const scrollToZone = (zoneId) => {
     const el = document.getElementById(`zone-${zoneId}`);
@@ -75,6 +114,38 @@ const Dashboard = () => {
     scrollToZone(zoneId);
   };
 
+  // Comprobamos si hay al menos una máquina en todas las zonas
+  const hasMachines = zones.some((zone) => zone.machines.length > 0);
+
+  // Estado combinado de carga
+  const stillLoading = zonesLoading || loadingMachines;
+
+  // Lógica de renderizado:
+  // 1) Si todavía estamos cargando y NO se ha cumplido el timeout (5s), mostramos spinner
+  if (stillLoading && !timeoutReached) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-blue-50">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  // 2) Si NO hay máquinas (después de cargar o tras timeout) mostramos mensaje
+  if (!hasMachines) {
+    return (
+      <div className="min-h-screen bg-blue-50 text-black w-full">
+        <Navbar onZoneSelect={handleZoneSelect} />
+        <div className="pt-40 max-w-7xl mx-auto py-8 px-4">
+          <p className="text-center text-xl text-gray-600">
+            El técnico aún no ha instalado las máquinas.{" "}
+            Estamos trabajando en la instalación; en breves estarán disponibles.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // 3) Si ya cargó y hay máquinas, mostramos el dashboard normal
   return (
     <div className="min-h-screen bg-blue-50 text-black w-full">
       <Navbar onZoneSelect={handleZoneSelect} />

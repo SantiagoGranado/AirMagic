@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase.js'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import { FaCamera, FaEye, FaEyeSlash } from 'react-icons/fa'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -38,8 +40,8 @@ export default function Profile() {
     setLoading(true)
     // 1) obtenemos el usuario auth
     const { data: authRes, error: authErr } = await supabase.auth.getUser()
-    if (authErr) {
-      setError(authErr)
+    if (authErr || !authRes.user) {
+      setError(authErr || new Error('No user found'))
       setLoading(false)
       return
     }
@@ -74,6 +76,16 @@ export default function Profile() {
   }
 
   const handleSaveProfile = async () => {
+    // Validar compañía no vacía y max 10 caracteres
+    if (!company.trim()) {
+      toast.error('La compañía no puede estar vacía.')
+      return
+    }
+    if (company.length > 10) {
+      toast.error('El nombre de la compañía debe tener como máximo 10 caracteres.')
+      return
+    }
+
     setSaving(true)
     try {
       let foto_url = profile.foto_url || ''
@@ -147,27 +159,29 @@ export default function Profile() {
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 space-y-6">
         {/* Avatar + botones */}
         <div className="flex justify-center">
-          <div className="relative">
+          <div className="relative group">
             <img
               src={avatarPreview || '/default-avatar.png'}
               alt="Avatar"
-              className="w-32 h-32 rounded-full object-cover border-2 border-gray-200 "
+              className="w-32 h-32 rounded-full object-cover border-2 border-gray-200"
             />
             {isEditing && (
               <>
+                <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                  <FaCamera className="h-8 w-8 text-white" />
+                </div>
                 <label
                   htmlFor="avatarInput"
-                  className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full cursor-pointer hover:bg-blue-700"
+                  className="absolute inset-0 cursor-pointer"
                 >
-                  <FaCamera className="text-white cursor-pointer" />
+                  <input
+                    id="avatarInput"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
                 </label>
-                <input
-                  id="avatarInput"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                />
               </>
             )}
           </div>
@@ -202,13 +216,15 @@ export default function Profile() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Compañía
+                Compañía <span className="text-xs text-gray-500">(máx. 10 caracteres)</span>
               </label>
               <input
                 type="text"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-                className="w-full border rounded px-3 py-2 focus:outline-blue-500"
+                maxLength={10}
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Máx. 10 caracteres"
               />
             </div>
           </div>
@@ -225,12 +241,13 @@ export default function Profile() {
                 type={showPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full border rounded px-3 py-2 focus:outline-blue-500"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Ingresa nueva contraseña"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center"
+                className="absolute inset-y-0 right-3 flex items-center text-gray-600"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -262,13 +279,19 @@ export default function Profile() {
           {!isEditing && !isChangingPassword && (
             <>
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={() => {
+                  setIsEditing(true)
+                  setMessage({ type: '', text: '' })
+                }}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-semibold py-2 rounded"
               >
                 Editar Perfil
               </button>
               <button
-                onClick={() => setIsChangingPassword(true)}
+                onClick={() => {
+                  setIsChangingPassword(true)
+                  setMessage({ type: '', text: '' })
+                }}
                 className="flex-1 bg-gray-200 hover:bg-gray-300 cursor-pointer text-gray-800 font-semibold py-2 rounded"
               >
                 Cambiar Contraseña
@@ -285,7 +308,14 @@ export default function Profile() {
                 {saving ? 'Guardando...' : 'Guardar Cambios'}
               </button>
               <button
-                onClick={() => setIsEditing(false)}
+                onClick={() => {
+                  setIsEditing(false)
+                  setMessage({ type: '', text: '' })
+                  // Restaurar valores originales
+                  setCompany(profile.compañia || '')
+                  setAvatarPreview(profile.foto_url ? getPublicUrl(profile.foto_url) : '')
+                  setAvatarFile(null)
+                }}
                 disabled={saving}
                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-semibold py-2 rounded disabled:opacity-50"
               >
@@ -308,6 +338,8 @@ export default function Profile() {
           Volver
         </button>
       </div>
+      {/* ToastContainer para mostrar popups */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   )
 }

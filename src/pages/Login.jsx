@@ -45,8 +45,8 @@ const Login = () => {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center px-4"
-      style={{ backgroundImage: `url('/img/logo.png')` }}
+      className="min-h-screen bg-cover bg-blue-200 bg-center flex items-center justify-center px-4"
+      
     >
       <div className="w-full max-w-md bg-black/50 border border-white/20 rounded-xl shadow-2xl backdrop-blur-md p-8">
         <h2 className="text-3xl font-extrabold text-center text-white drop-shadow-md mb-6">

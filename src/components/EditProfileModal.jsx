@@ -80,7 +80,7 @@ export default function EditProfileModal({ user, onClose, onUpdate }) {
       <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 z-10 animate-fadeIn">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition text-2xl font-bold"
+          className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition text-2xl font-bold cursor-pointer"
         >
           ×
         </button>

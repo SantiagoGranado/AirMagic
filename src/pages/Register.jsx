@@ -1,77 +1,97 @@
 // src/components/Register.jsx
 import React, { useState } from "react";
 import { supabase } from "../supabase.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Register({ onClose, onCreate }) {
-  const [email,     setEmail]     = useState("");
-  const [password,  setPassword]  = useState("");
-  const [compania,  setCompania]  = useState("");
-  const [file,      setFile]      = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [compania, setCompania] = useState("");
+  const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFileChange = (e) => {
     if (e.target.files.length) setFile(e.target.files[0]);
   };
 
+  const validateFields = () => {
+    if (!email || !password || !compania || !file) {
+      toast.error("Todos los campos son obligatorios.");
+      return false;
+    }
+    if (password.length < 6) {
+      toast.error("La contraseña debe tener al menos 6 caracteres.");
+      return false;
+    }
+    if (compania.length > 10) {
+      toast.error("El nombre de la compañía debe tener como máximo 10 caracteres.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) return;
+    if (!validateFields()) return;
 
     let fotoPath = "";
 
     try {
       // 1) Crear en Auth
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      if (signUpError) throw signUpError;
+      const { data: signUpData, error: signUpError } =
+        await supabase.auth.signUp({ email, password });
+      if (signUpError) {
+        toast.error(`Error en Auth: ${signUpError.message}`);
+        throw signUpError;
+      }
 
       const userId = signUpData.user.id;
 
       // 2) Subir avatar con pattern userId_timestamp.ext
-      if (file) {
-        setUploading(true);
-        const ext = file.name.split(".").pop();
-        const filename = `${userId}_${Date.now()}.${ext}`;
-        const storagePath = `avatars/${filename}`;
+      setUploading(true);
+      const ext = file.name.split(".").pop();
+      const filename = `${userId}_${Date.now()}.${ext}`;
+      const storagePath = `avatars/${filename}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from("avatars")
-          .upload(storagePath, file, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-        setUploading(false);
-        if (uploadError) throw uploadError;
-
-        fotoPath = storagePath;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(storagePath, file, { cacheControl: "3600", upsert: false });
+      setUploading(false);
+      if (uploadError) {
+        toast.error(`Error subiendo avatar: ${uploadError.message}`);
+        throw uploadError;
       }
+
+      fotoPath = storagePath;
 
       // 3) Insertar perfil en tabla `Usuarios`
       const { data: inserted, error: insertError } = await supabase
         .from("Usuarios")
         .insert([
           {
-            id:        userId,
-            email:     email,
-            compañia:  compania,   // mapeo explícito
-            foto_url:  fotoPath,
-            es_admin:  false       // asegurar booleano si no hay default
+            id: userId,
+            email,
+            compañia: compania,
+            foto_url: fotoPath,
+            es_admin: false,
           },
         ])
-        .select()    // para obtener el registro insertado
-        .single();   // y poder inspeccionarlo
+        .select()
+        .single();
 
-      if (insertError) throw insertError;
-      console.log("Perfil insertado correctamente:", inserted);
+      if (insertError) {
+        toast.error(`Error insertando perfil: ${insertError.message}`);
+        throw insertError;
+      }
 
+      toast.success("Usuario creado correctamente.");
       // 4) Notificar al padre y cerrar
       await onCreate({
-        id:        inserted.id,
-        email:     inserted.email,
-        compania:  inserted.compañia,
-        foto_url:  inserted.foto_url,
+        id: inserted.id,
+        email: inserted.email,
+        compania: inserted.compañia,
+        foto_url: inserted.foto_url,
       });
       onClose();
 
@@ -82,7 +102,6 @@ export default function Register({ onClose, onCreate }) {
       setFile(null);
     } catch (err) {
       console.error("Error creando usuario:", err);
-      alert("No se pudo crear el usuario: " + err.message);
       setUploading(false);
     }
   };
@@ -103,13 +122,15 @@ export default function Register({ onClose, onCreate }) {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-3 py-2 border rounded-md focus:ring focus:border-blue-300"
+              placeholder="usuario@ejemplo.com"
             />
           </div>
 
           {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Contraseña <span className="text-red-500">*</span>
+              Contraseña <span className="text-red-500">*</span>{" "}
+              <span className="text-xs text-gray-500">(mínimo 6 caracteres)</span>
             </label>
             <input
               type="password"
@@ -117,31 +138,39 @@ export default function Register({ onClose, onCreate }) {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-3 py-2 border rounded-md focus:ring focus:border-blue-300"
+              placeholder="••••••"
             />
           </div>
 
           {/* Compañía */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Compañía
+              Compañía <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={compania}
               onChange={(e) => setCompania(e.target.value)}
+              required
+              maxLength={10}
               className="w-full px-3 py-2 border rounded-md focus:ring focus:border-blue-300"
+              placeholder="Máx. 10 caracteres"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Máximo 10 caracteres.
+            </p>
           </div>
 
           {/* Avatar */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Avatar
+              Avatar <span className="text-red-500">*</span>
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
+              required
               className="w-full"
             />
             {uploading && (
@@ -167,6 +196,8 @@ export default function Register({ onClose, onCreate }) {
           </div>
         </form>
       </div>
+      {/* ToastContainer para mostrar popups */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 }

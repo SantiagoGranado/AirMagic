@@ -11,6 +11,13 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function AdminPanel() {
   const { users, loading, error, editUser, createUser } = useUsers();
+  // Ordenamos alfabéticamente por compañía (tratando valores vacíos como "")
+  const sortedUsers = [...users].sort((a, b) => {
+    const ca = (a.compañia || "").toLowerCase();
+    const cb = (b.compañia || "").toLowerCase();
+    return ca.localeCompare(cb);
+  });
+
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -82,7 +89,12 @@ export default function AdminPanel() {
       </h1>
 
       <div className="flex justify-end mb-6 space-x-4">
-        
+        <button
+          onClick={handleCreate}
+          className="inline-flex items-center gap-2 px-5 py-2.5 cursor-pointer rounded-md bg-green-600 hover:bg-green-700 text-white font-semibold text-sm shadow transition"
+        >
+          Crear Usuario
+        </button>
         <button
           onClick={handleLogout}
           className="inline-flex items-center gap-2 px-5 py-2.5 cursor-pointer rounded-md bg-red-600 hover:bg-red-700 text-white font-semibold text-sm shadow transition"
@@ -112,7 +124,7 @@ export default function AdminPanel() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {users.map((u) => {
+              {sortedUsers.map((u) => {
                 const compania = u.compañia || "—";
                 const avatarUrl = u.avatar_public_url || "/img/default.png";
                 return (
@@ -151,7 +163,7 @@ export default function AdminPanel() {
 
       {/* Mobile Cards */}
       <div className="lg:hidden space-y-4">
-        {users.map((u) => {
+        {sortedUsers.map((u) => {
           const compania = u.compañia || "—";
           const avatarUrl = u.avatar_public_url || "/img/default.png";
           return (
@@ -193,10 +205,7 @@ export default function AdminPanel() {
         />
       )}
       {isCreateOpen && (
-        <Register
-          onClose={handleCloseCreate}
-          onCreate={handleCreateUser}
-        />
+        <Register onClose={handleCloseCreate} onCreate={handleCreateUser} />
       )}
 
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
