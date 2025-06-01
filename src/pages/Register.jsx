@@ -183,13 +183,13 @@ export default function Register({ onClose, onCreate }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+              className="px-4 py-2 cursor-pointer bg-gray-200 rounded-md hover:bg-gray-300"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              className="px-4 py-2 cursor-pointer bg-green-600 text-white rounded-md hover:bg-green-700"
             >
               Crear
             </button>
