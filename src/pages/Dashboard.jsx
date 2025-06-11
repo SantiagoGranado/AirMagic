@@ -99,7 +99,7 @@ const Dashboard = () => {
     };
 
     fetchZonesAndMachines();
-  }, [rawZones, zonesLoading, user, selectedZone]);
+  }, [rawZones, zonesLoading, user]);
 
   const scrollToZone = (zoneId) => {
     const el = document.getElementById(`zone-${zoneId}`);
